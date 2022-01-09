@@ -2,6 +2,7 @@ const express= require("express");
 const bodyParser=require("body-parser");
 const request=require("request");
 const { application } = require("express");
+const https=require("https");
 
 const app=express();
 
@@ -13,15 +14,49 @@ app.get("/",function(req,res){
 })
 
 app.post("/",function(req,res){
-    var firstName=req.body.fName;
-    var lastName=req.body.lName;
-    var email=req.body.email;
+    const firstName=req.body.fName;
+    const lastName=req.body.lName;
+    const email=req.body.email;
 
-    console.log(firstName,lastName,email)
-})
+var data={
+        members:[{
+                email_address:email,
+                status:"unsubscribed",
+                merge_fields:{
+                    FNAME:firstName,
+                    LNAME:lastName
+                }
+            }
+        ]
+    }
+
+
+const jsonData=JSON.stringify(data);
+
+const url="https://us20.api.mailchimp.com/3.0/lists/eb33da9e6d";
+
+const options={
+    method:"POST",
+    auth:"tanmay1:f3717c865f38bd49e67fe6bee637eeb5-us20"
+}
+
+const request=https.request(url,options,function(response){
+    response.on("data",function(data){
+        console.log(JSON.parse(data));
+    });
+});
+
+
+request.write(jsonData);
+request.end();
+});
 
 app.listen(3000,function(){
     console.log("server is running on port 3000");
-})
+});
 
-//f3717c865f38bd49e67fe6bee637eeb5-us20
+// api key
+// f3717c865f38bd49e67fe6bee637eeb5-us20
+
+// id
+// eb33da9e6d
