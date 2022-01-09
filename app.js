@@ -21,7 +21,7 @@ app.post("/",function(req,res){
 var data={
         members:[{
                 email_address:email,
-                status:"unsubscribed",
+                status:"subscribed",
                 merge_fields:{
                     FNAME:firstName,
                     LNAME:lastName
@@ -41,6 +41,14 @@ const options={
 }
 
 const request=https.request(url,options,function(response){
+
+    if(response.statusCode===200){
+        res.sendFile(__dirname+"/success.html");
+    }
+    else{
+        res.sendFile(__dirname+"/failure.html");
+    }
+
     response.on("data",function(data){
         console.log(JSON.parse(data));
     });
